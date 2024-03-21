@@ -17,7 +17,8 @@ const UserSchema = new mongoose.Schema({
     phone: String,
     dob: String,
     gender: String,
-    passwordResetToken: String
+    passwordResetToken: String,
+    img: String,
   });
   
 const Users = mongoose.model('Users', UserSchema);

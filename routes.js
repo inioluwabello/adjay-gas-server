@@ -1,67 +1,21 @@
 const express = require("express");
 const bcrypt = require('bcrypt');
 var crypto = require('crypto');
+
 const router = express.Router();
 
-const jwt = require("jsonwebtoken");
+// auth object for authorization
 const auth = require("./auth");
 
+// User model
 const User = require("./db/userModel");
 
-// Login Endpoint
-router.post("/login", async (request, response) => {
-
-  const {email, password } = request.body;
-  const user = await User.findOne(email);
-
-  if (!user) {
-    return response.status(404).send({
-      message: "User not found",
-      error,
-    });
-  }
-  bcrypt
-    .compare(password, user.password)
-    .then((passwordCheck) => {
-      // check if password matches
-      if (!passwordCheck) {
-        return response.status(400).send({
-          message: "Passwords does not match",
-          error,
-        });
-      }
-
-      //   create JWT token
-      const token = jwt.sign(
-        {
-          userId: user._id,
-          userEmail: user.email,
-        },
-        "RANDOM-TOKEN",
-        { expiresIn: "24h" }
-      );
-
-      //   return success response
-      response.status(200).send({
-        message: "Login Successful",
-        user: user,
-        token,
-      });
-    })
-    // catch error if password does not match
-    .catch((error) => {
-      response.status(400).send({
-        message: "Passwords does not match",
-        error,
-      });
-    });
-});
-
+// Utilities for email sending
 const util = require("./utilities/util");
 
 // User Creation Endpoint
 router.post("/users", async (req, res) => {
-  const { email, dob, gender, lastname, othername, phone, address } = req.body;
+  const { email, dob, gender, lastname, othername, phone, address, img } = req.body;
 
   try {
     // Check if user already exists
@@ -73,7 +27,7 @@ router.post("/users", async (req, res) => {
 
     const passwordResetToken = randomValueHex(25);
     // Create a new user
-    const newUser = new User({ email, password: passwordResetToken, dob, gender, lastname, othername, phone, address, passwordResetToken });
+    const newUser = new User({ email, password: passwordResetToken, dob, gender, lastname, othername, phone, address, passwordResetToken, img });
     await newUser.save();
 
     // Send account completion email
@@ -83,6 +37,21 @@ router.post("/users", async (req, res) => {
   } catch (err) {
     console.error(err);
     console.log(req.body);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Define the route for retrieving all users
+router.get("/users", async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const users = await User.find();
+
+    // Return the list of users
+    res.status(200).json(users);
+  } catch (err) {
+    // Handle errors
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });

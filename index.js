@@ -29,7 +29,11 @@ app.use((req, res, next) => {
 
 // Routes
 const routes = require('./routes');
+const authRoutes = require('./authRoutes');
+const imageRoutes = require('./imageRoutes');
 app.use('/api', routes);
+app.use('/api', authRoutes);
+app.use('/api', imageRoutes);
 
 // Server Start
 app.listen(PORT, () => {
