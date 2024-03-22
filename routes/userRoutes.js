@@ -1,20 +1,19 @@
 const express = require("express");
 const bcrypt = require('bcrypt');
-var crypto = require('crypto');
 
 const router = express.Router();
 
 // auth object for authorization
-const auth = require("./auth");
+const auth = require("../auth");
 
 // User model
-const User = require("./db/userModel");
+const User = require("../db/userModel");
 
 // Utilities for email sending
-const util = require("./utilities/util");
+const util = require("../utilities/util");
 
 // User Creation Endpoint
-router.post("/users", async (req, res) => {
+router.post("/users", auth, async (req, res) => {
   const { email, dob, gender, lastname, othername, phone, address, img } = req.body;
 
   try {
@@ -25,7 +24,7 @@ router.post("/users", async (req, res) => {
       return res.status(200).json({ message: "User already exists" });
     }
 
-    const passwordResetToken = randomValueHex(25);
+    const passwordResetToken = util.randomValueHex(25);
     // Create a new user
     const newUser = new User({ email, password: passwordResetToken, dob, gender, lastname, othername, phone, address, passwordResetToken, img });
     await newUser.save();
@@ -42,7 +41,7 @@ router.post("/users", async (req, res) => {
 });
 
 // Define the route for retrieving all users
-router.get("/users", async (req, res) => {
+router.get("/users", auth, async (req, res) => {
   try {
     // Fetch all users from the database
     const users = await User.find();
@@ -117,11 +116,5 @@ router.put("/users/update-password/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-function randomValueHex (len) {
-  return crypto.randomBytes(Math.ceil(len/2))
-      .toString('hex')
-      .slice(0,len)
-}
 
 module.exports = router;

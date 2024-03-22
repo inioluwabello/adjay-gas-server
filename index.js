@@ -28,9 +28,9 @@ app.use((req, res, next) => {
 });
 
 // Routes
-const routes = require('./routes');
-const authRoutes = require('./authRoutes');
-const imageRoutes = require('./imageRoutes');
+const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
+const imageRoutes = require('./routes/imageRoutes');
 app.use('/api', routes);
 app.use('/api', authRoutes);
 app.use('/api', imageRoutes);

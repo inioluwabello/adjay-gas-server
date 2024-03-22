@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 
 const jwt = require("jsonwebtoken");
-const User = require("./db/userModel");
+const User = require("../db/userModel");
 
 // Login Endpoint
 router.post("/login", async (request, response) => {
@@ -54,5 +54,28 @@ router.post("/login", async (request, response) => {
       });
     });
 });
+
+// Utilities for email sending
+const util = require("../utilities/util");
+
+router.post("/forgot-password", async (request, response) => {
+  const {email } = request.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return response.status(404).send({
+      message: "Email not found",
+      error,
+    });
+  }
+
+  const passwordResetToken = util.randomValueHex(25);
+  user.passwordResetToken = passwordResetToken;
+  user.save();
+
+  util.sendEmail(email, "Password reset request", `Hello ${user.lastname},<br /><br />You have requested a password reset. Please follow the link below to reset your password.<br /><a href='https://adjay-gas.vercel.app/reset-password?userId=${user._id}&t=${passwordResetToken}'>https://adjay-gas.vercel.app/reset-password?userId=${user._id}&t=${passwordResetToken}</a>`);
+
+    response.status(201).json({ message: "Password reset initiated successfully. Please check your email to continue" });
+})
 
 module.exports = router;
