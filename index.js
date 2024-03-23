@@ -31,9 +31,11 @@ app.use((req, res, next) => {
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const imageRoutes = require('./routes/imageRoutes');
-app.use('/api', routes);
+const notificationRoutes = require('./routes/notificationRoutes');
+app.use('/api', userRoutes);
 app.use('/api', authRoutes);
 app.use('/api', imageRoutes);
+app.use('/api', notificationRoutes);
 
 // Server Start
 app.listen(PORT, () => {

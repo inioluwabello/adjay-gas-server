@@ -55,6 +55,21 @@ router.get("/users", auth, async (req, res) => {
   }
 });
 
+// Define the route for retrieving all users
+router.get("/users/:id", auth, async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const user = await User.findById(req.params.id);
+
+    // Return the list of users
+    res.status(200).json(user);
+  } catch (err) {
+    // Handle errors
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Update User Details Endpoint
 router.put("/users/:id", auth, async (req, res) => {
   const userId = req.params.id;
