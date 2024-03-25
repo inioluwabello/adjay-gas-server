@@ -19,7 +19,8 @@ const UserSchema = new mongoose.Schema({
     gender: String,
     passwordResetToken: String,
     img: String,
-    address: String
+    address: String,
+    role: String,
   });
   
 const Users = mongoose.model('Users', UserSchema);

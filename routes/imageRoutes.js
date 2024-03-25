@@ -40,9 +40,9 @@ router.get('/image/:imageName', (req, res) => {
   try {
     // Get the image name from the URL parameters
     const imageName = req.params.imageName;
-    
+
     // Construct the path to the image file using the image name
-    const imagePath = path.join(__dirname, 'uploads', imageName);
+    const imagePath = path.join(__dirname.replace("\\routes", ""), 'uploads', imageName);
 
     // Check if the file exists
     if (!fs.existsSync(imagePath)) {
